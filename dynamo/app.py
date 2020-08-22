@@ -2,7 +2,7 @@ import json
 import boto3
 
 
-def lambda_handler(_, _):
+def lambda_handler(_, context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('Table')
     response = table.scan()
