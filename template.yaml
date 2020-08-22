@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  database-helper lambda.
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 300
+
+Parameters:
+  EnvStageName:
+    Default: dev
+    Description: The Environment name (e.g. dev, prod, etc.)
+    Type: String
+  Region:
+      Default: us-west-2
+      Description: The region to deploy the managed services
+      Type: String
+
+
+Resources:
+  PostgresUtils:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: postgress
+      Handler: app.lambda_handler
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-PostgresUtils-${EnvStageName}
+      Runtime: python3.7
+      MemorySize: 128
+      Environment:
+        Variables:
+          REGION: !Ref Region
+          LAMBDA_ENV: !Ref EnvStageName
+          RDS_HOST: 'host.us-west-2.rds.amazonaws.com'
+          DB_USERNAME: 'db_username'
+          DB_PASSWORD: 'db_password'
+          DB_NAME: 'db_name'
+          DB_PORT: '5432' #default for postgres
+      Tags:
+        Function: !Sub "${AWS::StackName}-PostgresUtils-${EnvStageName}"
+  DynamoUtils:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dynamo
+      Handler: app.lambda_handler
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-DynamoUtils-${EnvStageName}
+      Runtime: python3.7
+      MemorySize: 128
+      Environment:
+        Variables:
+          REGION: !Ref Region
+          LAMBDA_ENV: !Ref EnvStageName
+          RDS_HOST: 'host.us-west-2.rds.amazonaws.com'
+          DB_USERNAME: 'db_username'
+          DB_PASSWORD: 'db_password'
+          DB_NAME: 'db_name'
+          DB_PORT: '5432' #default for postgres
+      Tags:
+        Function: !Sub "${AWS::StackName}-DynamoUtils-${EnvStageName}"
